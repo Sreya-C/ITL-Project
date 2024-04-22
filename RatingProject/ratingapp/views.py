@@ -1,58 +1,47 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth.models import User,auth
-from django.contrib import messages
-# Create your views here.
+from django.http import HttpResponseRedirect
+from .models import Sentence, SentenceForm
+
 def index(request):
-    return render(request,'index.html')
+    sentences = Sentence.objects.all()
+    return render(request, 'index.html', {'sentences': sentences})
+#For table
 
+def save_rating(request):
+    if request.method == 'POST':
+        sno = request.POST.get('sno')
+        rating = request.POST.get('rating')
+        # Update rating in the database
+        sentence = Sentence.objects.get(sno=sno)
+        sentence.rating = rating
+        sentence.save()
+        return HttpResponseRedirect('/')  # Redirect to the index page after saving rating
+#for saving each rating
 
-def register(request):
-    if(request.method=='POST'):
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
-        password2 = request.POST['password2']
-
-        if password==password2:
-            if User.objects.filter(email=email).exists():
-                messages.info(request,'Email Already Used')
-                return redirect('register')
-            elif User.objects.filter(username=username).exists():
-                messages.info(request,'Username Already Used')
-                return redirect('register')
-            else:
-                user = User.objects.create_user(username=username,email=email,password=password)
-                user.save()
-                return redirect('login')
+def sort_table(request):
+    column = request.GET.get('column')
+    order = request.GET.get('order')
+    if column in ['SNO', 'SOURCE', 'TARGET', 'RATING'] and order in ['asc', 'desc']:
+        if column == 'RATING':
+            sentences = Sentence.objects.all().values
+            print(sentences)
+            sentences = sentences.order_by(('' if order == 'asc' else '-') + 'rating')
         else:
-            messages.info(request,'PasswordS do not match')
-            return redirect('register')
-    else:   
-        return render(request,'register.html',)
-    
-def login(request):
-    if request.method=='POST': 
-        username=request.POST['username']
-        password=request.POST['password']
-        user = auth.authenticate(username=username, password=password)
-
-        if user is not None: 
-            auth.login(request,user)
-            return redirect('/')
-        else:
-            messages.info(request,'Invalid Credentials')
-            return redirect('login')
+            sentences = Sentence.objects.all().order_by(('' if order == 'asc' else '-') + column.lower() + ('' if column in ['SOURCE', 'TARGET'] else '_asc'))
+        return render(request, 'index.html', {'sentences': sentences})
     else:
-        return render(request,'login.html')
+        # Handle invalid sorting request
+        return HttpResponseRedirect('/')
 
-def logout(request):
-    auth.logout(request)
-    return redirect('/')
-
-def post(request,pk):
-    return render(request,'post.html', {'pk':pk})
-
-def counter(request):
-    posts = [1,2,3,4,'tim','tom','john','nothing']
-    return render(request,'counter.html',{'posts': posts})
+def add_sentence(request):
+    form = SentenceForm()
+    if request.method == 'POST':
+        form = SentenceForm(request.POST)
+        if form.is_valid():
+            # Get the last loaded sentence
+            last_sentence = Sentence.objects.last()
+            sno = last_sentence.sno + 1 if last_sentence else 1  # Calculate sno for the new sentence
+            form.instance.sno = sno  # Assign the calculated sno to the form instance
+            form.save()  # Save the form
+            return redirect('/')  # Redirect to the index page
+    return render(request, 'add_sentence.html', {'form': form})

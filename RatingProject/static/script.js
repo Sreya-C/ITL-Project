@@ -1,36 +1,41 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.rating').forEach(function(input) {
-      let textInput = document.createElement('input');
-      textInput.type = 'text';
-      textInput.className = 'rating-value';
-      textInput.value = input.value;
-      textInput.style.width = '30px'; 
-      textInput.style.height = '20px'; 
-      input.parentNode.insertBefore(textInput, input.nextSibling);
-  
-      input.addEventListener('change', function() {
-        textInput.value = input.value;
-        let saveButton = input.parentNode.nextElementSibling.querySelector('.myButton');
+  document.querySelectorAll('.rating').forEach(function (input) {
+    input.addEventListener('change', function () {
+        let rating = this.value;
+        let sno = this.closest('tr').querySelector('.sno').textContent;
+        let saveButton = this.parentNode.nextElementSibling.querySelector('.myButton');
         saveButton.disabled = false;
-      });
-  
-      textInput.addEventListener('input', function() {
-        input.value = textInput.value;
-      });
-  
-      let saveButton = input.parentNode.nextElementSibling.querySelector('.myButton');
-      saveButton.disabled = true;
     });
-  
-    document.addEventListener('click', function(event) {
-      if (event.target.classList.contains('myButton')) {
-        let row = event.target.parentNode.parentNode;
-        let ratingInput = row.querySelector('.rating');
+
+    let saveButton = input.parentNode.nextElementSibling.querySelector('.myButton');
+    saveButton.disabled = true;
+
+    saveButton.addEventListener('click', function () {
+        let ratingInput = this.parentNode.previousElementSibling.querySelector('.rating');
         let rating = ratingInput.value;
+        let sno = this.closest('tr').querySelector('.sno').textContent;
         console.log("New rating:", rating);
-        event.target.disabled = true;
-      }
+
+        // AJAX request to save rating
+        fetch('/save_rating/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token
+            },
+            body: JSON.stringify({ 'sno': sno, 'rating': rating })
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("Rating saved successfully");
+                saveButton.disabled = true;
+            } else {
+                console.error("Failed to save rating");
+            }
+        })
+        .catch(error => console.error("Error:", error));
     });
+});
   });
   
   function sortTableSnoAsc() {
