@@ -13,6 +13,9 @@ body{
     text-decoration: none;
     font-family: 'Poppins', sans-serif;
     background-color: rgb(255, 255, 255);
+    background-image: url('pic.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 #myTable {
@@ -96,3 +99,46 @@ input[type="range"]::-webkit-slider-thumb {
 .myButton{
     background-color: blueviolet;
 }
+
+.formheading{
+    text-align: center;
+    color: white;
+    background-color: blueviolet;
+    padding: 10px;
+    width: 100%;
+
+}
+
+form {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #d3fffe;
+    border-radius: 5px;
+    margin-top: 80px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #9239e0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
