@@ -1,18 +1,22 @@
-<h1>Login</h1>
-<style>
-    h5{
-        color: red;     
-    }
-</style>
-{% for message in messages %}
-<h5>{{message}}</h5>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <form action="" method = 'post'>
+        {% csrf_token %}
+        <h4>Login</h4>
+        <label for="">Username</label> 
+        <input type="text" placeholder="Enter you username" name = "username" required>
 
-<form method="POST" action="login">
-    {% csrf_token %}
-    <p>Username:</p>
-    <input type="text" name="username"/>
-    <p>Password:</p>
-    <input type="password" name="password"/><br><br>
-    <input type="submit" />
-</form>
+        <label for="">Password</label> 
+        <input type="password" placeholder="Enter you Password" name = "password" required>
+
+        <button type="submit">Submit</button>
+
+    </form>
+</body>
+</html>

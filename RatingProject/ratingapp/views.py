@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from .models import Sentence, SentenceForm
+from django.contrib.auth.models import User, auth
 
 def index(request):
     sentences = Sentence.objects.all()
@@ -45,3 +46,56 @@ def add_sentence(request):
             form.save()  # Save the form
             return redirect('/')  # Redirect to the index page
     return render(request, 'add_sentence.html', {'form': form})
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User, auth
+
+# Your other views...
+
+def signupfunction(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        email = request.POST['email']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+
+        if password1 == password2:
+            # Check if username already exists
+            if User.objects.filter(username=username).exists():
+                return render(request, 'signup.html', {'error': 'Username already exists'})
+
+            # Create user if username is unique and passwords match
+            user = User.objects.create_user(username=username, email=email, password=password1)
+            user.save()
+            return redirect('/loginpage/')  # Redirect to login page
+        else:
+            # Handle password mismatch error
+            return render(request, 'signup.html', {'error': 'Passwords do not match'})
+
+    # If request method is not POST, render the signup form
+    return render(request, 'signup.html')
+
+def loginfunction(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        
+        # Authenticate user
+        user = auth.authenticate(username=username, password=password)
+
+        if user is not None:
+            auth.login(request, user)
+            return redirect('index')  # Redirect to index page after successful login
+        else:
+            # Handle invalid login credentials
+            return render(request, 'login.html', {'error': 'Invalid username or password'})
+
+    # If request method is not POST, render the login form
+    return render(request, 'login.html')
+
+
+# admin user:
+# username: adminuser
+# password: adminuser
+# email: adminuser@gmail.com
