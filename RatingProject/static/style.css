@@ -5,14 +5,18 @@
     /* includes the padding and border in the width and height of the elements */
   }
 
-
+  .invaliddiv {
+    width: 300px;
+    background-color: goldenrod !important; 
+    margin: 0 auto;
+}
 
 body{
     margin: 0px;
     padding: 0px;
     text-decoration: none;
     font-family: 'Poppins', sans-serif;
-    background-color: rgb(255, 255, 255);
+   
     background-image: url('pic.jpg');
     background-repeat: no-repeat;
     background-size: cover;

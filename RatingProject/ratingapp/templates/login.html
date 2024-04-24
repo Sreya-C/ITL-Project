@@ -1,25 +1,34 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static '../static/style.css' %}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
-    <form action="" method = 'post'>
-        <h2 class = "formheading">Login</h2><br><br>
+    <form action="" method="post">
+        <h2 class="formheading">Login</h2><br><br>
         {% csrf_token %}
         
-        <label for="">Username</label> 
-        <input type="text" placeholder="Enter you username" name = "username" required class = "formfield">
+        <label for="id_username">Username</label> 
+        <input type="text" placeholder="Enter your username" name="username" id="id_username" required class="formfield">
         <br><br>
-        <label for="">Password</label> 
-        <input type="password" placeholder="Enter you Password" name = "password" required class = "formfield">
+        <label for="id_password">Password</label> 
+        <input type="password" placeholder="Enter your password" name="password" id="id_password" required class="formfield">
         <br><br>
         <button type="submit">Submit</button>
+        
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
 
+        <div class = "invaliddiv">
+            <p style = "padding: 10x";>Don't have an account? <a href="{% url 'signuppage' %}">Sign up here</a>.</p>
+        </div>
     </form>
+
+    
 </body>
 </html>

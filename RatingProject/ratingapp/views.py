@@ -5,6 +5,9 @@ from django.contrib.auth.models import User, auth
 from .forms import SentenceForm
 import random
 
+def home(request):
+    return render(request, 'home.html')
+
 def index(request):
     if request.user.is_authenticated:
         user_sentences = Sentence.objects.filter(user=request.user)
@@ -53,7 +56,10 @@ def sort_table(request):
         return redirect('loginpage')
 
 
+from django.contrib.auth.decorators import login_required, permission_required
 
+@login_required
+@permission_required('auth.add_user')  # Restrict to users with "add_user" permission
 def add_sentence(request):
     if request.method == 'POST':
         form = SentenceForm(request.POST)
@@ -108,8 +114,14 @@ def loginfunction(request):
             auth.login(request, user)
             return redirect('index')  # Redirect to index page after successful login
         else:
-            # Handle invalid login credentials
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
+            # Check if the user exists in the database
+            try:
+                User.objects.get(username=username)
+                error = 'Invalid password. Please try again or sign up.'
+            except User.DoesNotExist:
+                error = 'User does not exist. Please sign up first.'
+
+            return render(request, 'login.html', {'error': error})
 
     # If request method is not POST, render the login form
     return render(request, 'login.html')
