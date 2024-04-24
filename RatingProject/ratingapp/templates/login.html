@@ -21,11 +21,11 @@
         <button type="submit">Submit</button>
         
         {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <p style="color: red; margin: 10px auto 0px auto; text-align: center; width: 70%;">{{ error }}</p>
         {% endif %}
 
         <div class = "invaliddiv">
-            <p style = "padding: 10x";>Don't have an account? <a href="{% url 'signuppage' %}">Sign up here</a>.</p>
+            <p style="margin-top: 15px;">Don't have an account? <a href="{% url 'signuppage' %}">Sign up here</a>.</p>
         </div>
     </form>
 

@@ -8,6 +8,10 @@ class Sentence(models.Model):
     source = models.CharField(max_length=100)
     target = models.CharField(max_length=100)
     rating = models.IntegerField(default=0)
+    class Meta:
+        permissions = [
+            ("can_add_sentence", "Can add sentences"),
+        ]
 
     def __str__(self):
         return f"Sentence {self.sno}: {self.source} -> {self.target}"

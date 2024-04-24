@@ -25,8 +25,12 @@
         <label for="">Confirm Password</label> 
         <input type="password" placeholder="Enter you Password again" name = "password2" required class = "formfield">
         <br><br>
-        <button type="submit">Submit</button>
+        <button type="submit">Submit</button><br>
+        {% if error %}
+    <p style = "color: red; text-align: center; margin: 10px;">{{ error }}</p>
+{% endif %}
             
     </form>
+
 </body>
 </html>

@@ -4,30 +4,43 @@ from .models import Sentence
 from django.contrib.auth.models import User, auth
 from .forms import SentenceForm
 import random
+from django.db.models import Avg
+from django.contrib.auth.decorators import login_required, permission_required
 
 def home(request):
     return render(request, 'home.html')
 
+@login_required
 def index(request):
     if request.user.is_authenticated:
-        user_sentences = Sentence.objects.filter(user=request.user)
-        print("User sentences:", user_sentences)  # Debug print
-        if not user_sentences.exists():
-            all_sentences = list(Sentence.objects.all())
-            if len(all_sentences) >= 3:
-                random_sentences = random.sample(all_sentences, 3)
-                for sentence in random_sentences:
-                    sentence.pk = None  # Clone the sentence object
-                    sentence.user = request.user
-                    sentence.save()
+        # Fetch all sentences if the user is not an admin
+        if not request.user.is_staff:
+            user_sentences = Sentence.objects.filter(user=request.user)
+            if not user_sentences.exists():
+                all_sentences = list(Sentence.objects.all())
+                if len(all_sentences) >= 3:
+                    random_sentences = random.sample(all_sentences, 3)
+                    for sentence in random_sentences:
+                        sentence.pk = None  # Clone the sentence object
+                        sentence.user = request.user
+                        sentence.save()
+                else:
+                    random_sentences = []
             else:
-                random_sentences = []
+                random_sentences = user_sentences
+
+            return render(request, 'index.html', {'sentences': random_sentences, 'request': request, 'is_admin': False})
+
+        # If the user is admin, fetch ratings for each sentence
         else:
-            random_sentences = user_sentences
-        return render(request, 'index.html', {'sentences': random_sentences})
+            sentences = Sentence.objects.all().annotate(avg_rating=Avg('rating'))
+            return render(request, 'index.html', {'sentences': sentences, 'request': request, 'is_admin': True})
+
     else:
         return redirect('loginpage')
-
+    
+    
+    
 def save_rating(request):
     if request.method == 'POST':
         sno = request.POST.get('sno')
@@ -59,7 +72,7 @@ def sort_table(request):
 from django.contrib.auth.decorators import login_required, permission_required
 
 @login_required
-@permission_required('auth.add_user')  # Restrict to users with "add_user" permission
+@permission_required('auth.add_user') 
 def add_sentence(request):
     if request.method == 'POST':
         form = SentenceForm(request.POST)
@@ -77,9 +90,9 @@ def add_sentence(request):
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 
-# Your other views...
-
 def signupfunction(request):
+    error = None  # Initialize error message
+
     if request.method == 'POST':
         username = request.POST['username']
         email = request.POST['email']
@@ -89,18 +102,18 @@ def signupfunction(request):
         if password1 == password2:
             # Check if username already exists
             if User.objects.filter(username=username).exists():
-                return render(request, 'signup.html', {'error': 'Username already exists'})
-
-            # Create user if username is unique and passwords match
-            user = User.objects.create_user(username=username, email=email, password=password1)
-            user.save()
-            return redirect('/loginpage/')  # Redirect to login page
+                error = 'Username already exists'
+            else:
+                # Create user if username is unique and passwords match
+                user = User.objects.create_user(username=username, email=email, password=password1)
+                user.save()
+                return redirect('/loginpage/')  # Redirect to login page
         else:
             # Handle password mismatch error
-            return render(request, 'signup.html', {'error': 'Passwords do not match'})
+            error = 'Passwords do not match'
 
-    # If request method is not POST, render the signup form
-    return render(request, 'signup.html')
+    # If request method is not POST or there is an error, render the signup form with error message
+    return render(request, 'signup.html', {'error': error})
 
 def loginfunction(request):
     if request.method == 'POST':

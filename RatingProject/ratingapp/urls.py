@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.shortcuts import render
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
      path('', views.home, name='home'),
@@ -12,4 +13,5 @@ urlpatterns = [
     path('add_sentence/', views.add_sentence, name='add_sentence'),
     path('signuppage/', views.signupfunction),
     path('loginpage/', views.loginfunction),
+    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
 ]

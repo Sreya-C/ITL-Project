@@ -9,29 +9,35 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f2f2f2;
+            background-color: #000;
+            color: #fff;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px auto;
-            background-color: #fff;
-            border: 1px solid #ddd;
+            background-color: #222;
+            border: 1px solid #444;
         }
         th, td {
             padding: 8px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #444;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #333;
             cursor: pointer;
         }
+        #add-sentence-button{
+            background-color: rgb(8, 61, 129);
+        }
         .myButton {
-            background-color: #4CAF50;
+            background-color: #9239e0;
+            width: fit;
             border: none;
             color: white;
             padding: 8px 16px;
+            display: flex;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -44,15 +50,61 @@
             background-color: #aaa;
             cursor: not-allowed;
         }
+        #logout-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999; 
+            
+        }
+        .logoutButton {
+            background-color: #c93b3b;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: -10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-left: 10px;
+            border-radius: 4px;
+            cursor: pointer;          
+            transition: background-color 0.3s;
+        }
+        .logoutButton:hover {
+            background-color: #a52c2c;
+        }
+
+        #submitid{
+            background-color: #a52c2c;
+            border: none;
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <table>
+    <div id="welcome-user">
+        {% if request.user.is_authenticated %}
+            <p>Welcome, {{ request.user.username }}</p>
+        {% endif %}
+    </div>
+    <div id="logout-container">
+        <form method="POST" action="{% url 'logout' %}" class="logoutButton">
+            {% csrf_token %}
+            <input type="submit" value="Logout" id = "submitid">
+        </form>
+    </div>
+
+     <table>
         <tr>
             <th class="sort-SNO">S.No.</th>
             <th class="sort-SOURCE">Source Sentence in Hindi</th>
             <th class="sort-TARGET">Target Sentence in Telugu</th>
             <th class="sort-RATING">Rating</th>
+            {% if request.user.is_authenticated and request.user.is_staff %}
+                <th>User</th>
+            {% endif %}
         </tr>
         <tbody id="tablebody">
             {% for sentence in sentences %}
@@ -60,19 +112,31 @@
                 <td class="sno">{{ sentence.sno }}</td>
                 <td class="td-sentences">{{ sentence.source }}</td>
                 <td class="td-sentences">{{ sentence.target }}</td>
-                <td>
-                    <form id="ratingForm{{ sentence.sno }}" method="POST" action="{% url 'save_rating' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="sno" value="{{ sentence.sno }}">
-                        <input type="range" class="rating" name="rating" min="0" max="100">
-                        <span class="rating-value">{{ sentence.rating }}</span>
-                        <input type="submit" class="myButton disabled" value="Save">
-                    </form>
-                </td>
+                <td class="td-sentences">{{ sentence.rating }}</td>
+                {% if request.user.is_authenticated and request.user.is_staff %}
+                    <td>{{ sentence.user.username }}</td>
+                {% else %}
+                    <td>
+                        <form id="ratingForm{{ sentence.sno }}" method="POST" action="{% url 'save_rating' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="sno" value="{{ sentence.sno }}">
+                            <input type="range" class="rating" name="rating" min="0" max="100">
+                            <span class="rating-value">{{ sentence.rating }}</span>
+                            <input type="submit" class="myButton disabled" value="Save">
+                        </form>
+                    </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    
+    {% if is_admin %}
+    <div style="display: flex; justify-content: center; align-items: center; ">
+        <a href="{% url 'add_sentence' %}" id="add-sentence-button" class="myButton">Add Sentence</a>
+    </div>
+    {% endif %}
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
