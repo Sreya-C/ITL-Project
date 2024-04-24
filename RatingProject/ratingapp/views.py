@@ -115,8 +115,6 @@ def loginfunction(request):
     return render(request, 'login.html')
 
 
-
-
 # admin user:
 # username: adminuser
 # password: adminuser
