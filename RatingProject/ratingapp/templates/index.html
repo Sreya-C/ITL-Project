@@ -25,6 +25,7 @@
         }
         th {
             background-color: #f2f2f2;
+            cursor: pointer;
         }
         .myButton {
             background-color: #4CAF50;
@@ -60,7 +61,7 @@
                 <td class="td-sentences">{{ sentence.source }}</td>
                 <td class="td-sentences">{{ sentence.target }}</td>
                 <td>
-                    <form id="ratingForm{{ sentence.sno }}" method="POST" action="/save_rating/">
+                    <form id="ratingForm{{ sentence.sno }}" method="POST" action="{% url 'save_rating' %}">
                         {% csrf_token %}
                         <input type="hidden" name="sno" value="{{ sentence.sno }}">
                         <input type="range" class="rating" name="rating" min="0" max="100">
@@ -124,16 +125,4 @@
                 sortTable(0, sortCounters['SNO'] % 2 === 0 ? 'asc' : 'desc');
                 sortCounters['SNO']++;
             } else if (event.target.classList.contains('sort-SOURCE')) {
-                sortTable(1, sortCounters['SOURCE'] % 2 === 0 ? 'asc' : 'desc');
-                sortCounters['SOURCE']++;
-            } else if (event.target.classList.contains('sort-TARGET')) {
-                sortTable(2, sortCounters['TARGET'] % 2 === 0 ? 'asc' : 'desc');
-                sortCounters['TARGET']++;
-            } else if (event.target.classList.contains('sort-RATING')) {
-                sortTable(3, sortCounters['RATING'] % 2 === 0 ? 'asc' : 'desc');
-                sortCounters['RATING']++;
-            }
-        });
-    </script>
-</body>
-</html>
+                sortTable(1, sortCounters['SOURCE'] % 2 === 0 ? 'asc

@@ -1,50 +1,65 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from .models import Sentence, SentenceForm
+from .models import Sentence
 from django.contrib.auth.models import User, auth
+from .forms import SentenceForm
+import random
 
 def index(request):
-    sentences = Sentence.objects.all()
-    return render(request, 'index.html', {'sentences': sentences})
-#For table
+    if request.user.is_authenticated:
+        user_sentences = Sentence.objects.filter(user=request.user)
+        print("User sentences:", user_sentences)  # Debug print
+        if not user_sentences.exists():
+            all_sentences = list(Sentence.objects.all())
+            if len(all_sentences) >= 3:
+                random_sentences = random.sample(all_sentences, 3)
+                for sentence in random_sentences:
+                    sentence.pk = None  # Clone the sentence object
+                    sentence.user = request.user
+                    sentence.save()
+            else:
+                random_sentences = []
+        else:
+            random_sentences = user_sentences
+        return render(request, 'index.html', {'sentences': random_sentences})
+    else:
+        return redirect('loginpage')
 
 def save_rating(request):
     if request.method == 'POST':
         sno = request.POST.get('sno')
         rating = request.POST.get('rating')
         # Update rating in the database
-        sentence = Sentence.objects.get(sno=sno)
+        sentence = Sentence.objects.get(pk=sno)
         sentence.rating = rating
         sentence.save()
-        return HttpResponseRedirect('/')  # Redirect to the index page after saving rating
-#for saving each rating
+        return redirect('index')
 
 def sort_table(request):
     column = request.GET.get('column')
     order = request.GET.get('order')
-    if column in ['SNO', 'SOURCE', 'TARGET', 'RATING'] and order in ['asc', 'desc']:
-        if column == 'RATING':
-            sentences = Sentence.objects.all().values
-            print(sentences)
-            sentences = sentences.order_by(('' if order == 'asc' else '-') + 'rating')
+    if column in ['sno', 'source', 'target', 'rating'] and order in ['asc', 'desc']:
+        if column == 'rating':
+            sentences = Sentence.objects.all().order_by(('' if order == 'asc' else '-') + 'rating')
         else:
-            sentences = Sentence.objects.all().order_by(('' if order == 'asc' else '-') + column.lower() + ('' if column in ['SOURCE', 'TARGET'] else '_asc'))
+            sentences = Sentence.objects.all().order_by(('' if order == 'asc' else '-') + column)
         return render(request, 'index.html', {'sentences': sentences})
     else:
         # Handle invalid sorting request
-        return HttpResponseRedirect('/')
+        return redirect('index')
+
 
 def add_sentence(request):
-    form = SentenceForm()
     if request.method == 'POST':
         form = SentenceForm(request.POST)
         if form.is_valid():
-            # Get the last loaded sentence
-            last_sentence = Sentence.objects.last()
-            sno = last_sentence.sno + 1 if last_sentence else 1  # Calculate sno for the new sentence
-            form.instance.sno = sno  # Assign the calculated sno to the form instance
-            form.save()  # Save the form
-            return redirect('/')  # Redirect to the index page
+            sentence = form.save(commit=False)
+            sentence.user = request.user
+            sentence.save()
+            print("Sentence saved:", sentence)  # Debug print
+            return redirect('index')
+    else:
+        form = SentenceForm()
     return render(request, 'add_sentence.html', {'form': form})
 
 
@@ -93,6 +108,8 @@ def loginfunction(request):
 
     # If request method is not POST, render the login form
     return render(request, 'login.html')
+
+
 
 
 # admin user:
