@@ -1,0 +1,61 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* includes the padding and border in the width and height of the elements */
+  }
+
+
+
+body{
+    margin: 0px;
+    padding: 0px;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    background-color: rgb(255, 255, 255);
+}
+
+#myTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+#myTable tr:nth-child(even) {
+    background-color: rgba(177, 177, 177, 0.214);
+}
+
+#myTable th{
+    padding: 20px 20px 20px 20px;
+}
+
+#myTable td{
+    padding: 10px 5px;
+}
+
+.td-sentences{
+    overflow: scroll;
+}
+
+.myButton{
+    cursor: pointer;
+    
+}
+
+#sort-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px;
+}
+
+.sort-box-independent{
+    padding: 10px;
+}
+
+.sort-SNO, .sort-RATING, .sort-SOURCE, .sort-TARGET{
+    cursor: pointer;
+}
