@@ -1,18 +1,40 @@
-function storeRating(){
-  document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('myButton')){ // This line checks whether the element that triggered the click event (event.target is the element which has been clicked) has the class "myButton" by using the classList.contains() method. If the clicked element has this class, it means it's a "Save" button. {
-            let row = event.target.parentNode.parentNode; // If the clicked element is a "Save" button, this line retrieves the parent node of the clicked button twice (parentNode.parentNode). This is done to traverse up the DOM tree and get the parent <tr> element (row) that contains the clicked button.
-            let ratingInput = row.querySelector('.rating');
-            // Get the value from the rating input
-            let rating = ratingInput.value;
-            console.log("New rating:", rating);
-            // Here you can save the rating value or perform any other desired action
-            saveButton.disabled = true;
-        } 
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.rating').forEach(function(input) {
+    let textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'rating-value';
+    textInput.value = input.value;
+    textInput.style.width = '30px'; 
+    textInput.style.height = '20px'; 
+    input.parentNode.insertBefore(textInput, input.nextSibling);
+
+    input.addEventListener('change', function() {
+      textInput.value = input.value;
+      let saveButton = input.parentNode.nextElementSibling.querySelector('.myButton');
+      saveButton.disabled = false;
+    });
+
+    textInput.addEventListener('input', function() {
+      input.value = textInput.value;
+    });
+
+    // Initially disable the save button
+    let saveButton = input.parentNode.nextElementSibling.querySelector('.myButton');
+    saveButton.disabled = true;
+  });
+
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('myButton')) {
+      let row = event.target.parentNode.parentNode;
+      let ratingInput = row.querySelector('.rating');
+      let rating = ratingInput.value;
+      console.log("New rating:", rating);
+      event.target.disabled = true;
+    }
   });
 });
-}
+
+  
 
 
 function sortTableSnoAsc() {
@@ -62,6 +84,57 @@ function sortTableSnoDesc() {
   }
 }
   
+function sortTableSourceAsc() {
+  console.log("sortTableSourceAsc");
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.querySelector('table');
+  switching = true;
+  while (switching) {
+      switching = false;
+      rows = table.rows;
+      for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          // Adjust the index as per your table structure, assuming the Source Sentence is the second cell
+          x = rows[i].getElementsByClassName("td-sentences")[1].textContent || rows[i].getElementsByClassName("td-sentences")[1].innerText;
+          y = rows[i + 1].getElementsByClassName("td-sentences")[1].textContent || rows[i + 1].getElementsByClassName("td-sentences")[1].innerText;
+          if (x.localeCompare(y, 'hi') < 0) { // Adding 'hi' for Hindi locale comparison, remove if not needed
+              shouldSwitch = true;
+              break;
+          }
+      }
+      if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+      }
+  }
+}
+
+function sortTableSourceDesc() {
+  console.log("sortTableSourceDesc");
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.querySelector('table');
+  switching = true;
+  while (switching) {
+      switching = false;
+      rows = table.rows;
+      for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          // Adjust the index as per your table structure, assuming the Source Sentence is the second cell
+          x = rows[i].getElementsByClassName("td-sentences")[1].textContent || rows[i].getElementsByClassName("td-sentences")[1].innerText;
+          y = rows[i + 1].getElementsByClassName("td-sentences")[1].textContent || rows[i + 1].getElementsByClassName("td-sentences")[1].innerText;
+          if (x.localeCompare(y, 'hi') > 0) { // Adding 'hi' for Hindi locale comparison, remove if not needed
+              shouldSwitch = true;
+              break;
+          }
+      }
+      if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+      }
+  }
+}
+
+
 
 function sortTableRatingAsc() {
   var table, rows, switching, i, x, y, shouldSwitch;
@@ -108,6 +181,54 @@ function sortTableRatingAsc() {
       }
     }
   }
+
+  function sortTableTargetAsc() {
+    console.log("sortTableTargetAsc");
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.querySelector('table');
+    switching = true;
+    while (switching) {
+        switching = false; 
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false; 
+            x = rows[i].getElementsByClassName("td-sentences")[0].textContent || rows[i].getElementsByClassName("td-sentences")[0].innerText;
+            y = rows[i + 1].getElementsByClassName("td-sentences")[0].textContent || rows[i + 1].getElementsByClassName("td-sentences")[0].innerText;
+            if (x.localeCompare(y) < 0) {
+                shouldSwitch = true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
+    }
+}
+
+function sortTableTargetDesc() {
+  console.log("sortTableTargetDesc");
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.querySelector('table');
+  switching = true;
+  while (switching) {
+      switching = false; 
+      rows = table.rows;
+      for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false; 
+          x = rows[i].getElementsByClassName("td-sentences")[0].textContent || rows[i].getElementsByClassName("td-sentences")[0].innerText;
+          y = rows[i + 1].getElementsByClassName("td-sentences")[0].textContent || rows[i + 1].getElementsByClassName("td-sentences")[0].innerText;
+          if (x.localeCompare(y) > 0) {
+              shouldSwitch = true;
+              break;
+          }
+      }
+      if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+      }
+  }
+}
 
   let counterSNO = 0;
   let counterSOURCE = 0;
@@ -171,13 +292,4 @@ function sortTableRatingAsc() {
       } 
     }
 
-  });
-
-const sliders = document.querySelectorAll('.rating');
-sliders.forEach(slider => {
-  slider.addEventListener('input', function() {
-    const saveButton = this.closest('tr').querySelector('.myButton');
-    saveButton.disabled = false;
-    storeRating();
-    });
   });

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href = "./bootstrap-4.0.0-dist/css/bootstrap.css">
+    <title>IT Lab Miniproject</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="jquery-3.7.1.js"></script>
+
+</head>
+<body>
+    <table ID="myTable" border="2">
+        <tr>
+            <th class = "sort-SNO">S.No.</th>
+            <th class = "sort-SOURCE">Source Sentence in Hindi</th>
+            <th class = "sort-TARGET">Target Sentence in Telugu</th>
+            <th class = "sort-RATING">Rating</th>
+            <th>Save button</th>
+        </tr>
+    <tbody id="table body"> 
+        <tr>
+            <td class="sno">1</td>
+            <td class = "td-sentences">मै आपका आभारी हु</td>
+            <td class = "td-sentences">నేను మీకు కృతజ్ఞుడను</td>
+            <td><input type="range" min="0" max="100" value="0" steps= "1" class = "rating"></td>
+            <td><button class = "myButton btn btn-info">Save</button></td>
+        </tr>
+        <tr>
+            <td class="sno">2</td>  
+            <td class = "td-sentences">आपका स्वागत है</td>
+            <td class = "td-sentences">మీకు స్వాగతం</td>
+            <td><input type="range" min="0" max="100" value="0" steps= "1" class = "rating"></td>
+            <td><button class = "myButton btn btn-info" >Save</button></td>
+        </tr>
+        <tr>
+            <td class="sno">3</td>
+            <td class = "td-sentences">मै घर जाना चाहती हु</td>
+            <td class = "td-sentences">నేను ఇంటికి వెళ్ళాలి</td>
+            <td><input type="range" min="0" max="100" value="0" steps= "1" class = "rating"></td>
+            <td><button class = "myButton btn btn-info" >Save</button></td>
+        </tr>
+    </tbody>
+    </table>
+    <br>
+    <div id = "sort-box">
+        <div class = "sort-box-independent"><button class = "btn btn-secondary" onclick="sortTableSnoAsc()">Sort Ascending (S.No.)</button></div>
+        <div class = "sort-box-independent"><button class = "btn btn-secondary" onclick="sortTableSnoDesc()">Sort Descending (S.No.)</button></div>
+        <div class = "sort-box-independent"><button class = "btn btn-secondary" onclick="sortTableRatingAsc()">Sort Ascending (Rating)</button></div>
+        <div class = "sort-box-independent"><button class = "btn btn-secondary" onclick="sortTableRatingDesc()">Sort Descending (Rating)</button></div>
+    </div>
+
+    <script src = "script.js"></script>
+</body>
+</html>
